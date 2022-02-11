@@ -32,7 +32,7 @@ function ScreenMyArticles(props) {
   }
 
   var noArticles
-  if(props.myArticles == 0){
+  if(props.myArticles.length == 0){
     noArticles = <div style={{marginTop:"30px"}}>No Articles</div>
   }
 
