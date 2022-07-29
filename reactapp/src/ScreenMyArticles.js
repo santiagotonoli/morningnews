@@ -33,8 +33,17 @@ function ScreenMyArticles(props) {
 
   var noArticles
   if(props.myArticles.length == 0){
-    noArticles = <div style={{marginTop:"30px"}}>No Articles</div>
+    noArticles = <div style={{margin:"30px"}}>Please like an article</div>
   }
+
+  async function deleteArticleToWishlist(article, token){
+    props.deleteToWishList(article.title)
+    var deleteFromBdd = await fetch(`/delete-wishlist/${token}/${article.title}`, {
+      method: 'DELETE',
+    })
+  }
+
+
 
   return (
     <div>
@@ -67,7 +76,7 @@ function ScreenMyArticles(props) {
                     }
                     actions={[
                         <Icon type="read" key="ellipsis2" onClick={() => showModal(article.title,article.content)} />,
-                        <Icon type="delete" key="ellipsis" onClick={() => props.deleteToWishList(article.title)} />
+                        <Icon type="delete" key="ellipsis" onClick={() => deleteArticleToWishlist(article, props.token)} />
                     ]}
                     >
 
@@ -105,7 +114,8 @@ function ScreenMyArticles(props) {
 }
 
 function mapStateToProps(state){
-  return {myArticles: state.wishList}
+  return {myArticles: state.wishList,
+          token: state.token}
 }
 
 function mapDispatchToProps(dispatch){

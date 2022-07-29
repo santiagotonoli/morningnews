@@ -50,6 +50,18 @@ function ScreenHome(props) {
     if(body.result == true){
       props.addToken(body.token)
       setUserExists(true)
+      const dataWishlist = await fetch('/get-data', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `token=${body.token}`
+      })
+      const bodyWishlist = await dataWishlist.json()
+      // props.dataWishlist(bodyWishlist.wishlist)
+      console.log(bodyWishlist)
+      for(var i = 0; i < bodyWishlist.length; i++){
+        props.addToWishList(bodyWishlist[i])
+          console.log(bodyWishlist[i])
+      }
       
     }  else {
       setErrorsSignin(body.error)
@@ -72,7 +84,10 @@ function ScreenHome(props) {
 
   return (
     <div className="Login-page" >
-
+        <div className="Welcome">
+          <h1 className="h1">Welcome to Morning News</h1>
+        </div>
+        <div className="Logins">
           {/* SIGN-IN */}
 
           <div className="Sign">
@@ -103,6 +118,8 @@ function ScreenHome(props) {
 
           </div>
 
+        </div>
+
       </div>
   );
 }
@@ -111,11 +128,20 @@ function mapDispatchToProps(dispatch){
   return {
     addToken: function(token){
       dispatch({type: 'addToken', token: token})
+    },
+    addToWishList: function(data){
+      dispatch({type: 'addArticle',
+        articleLiked: data
+      })
     }
   }
 }
 
+function mapStateToProps(state){
+  return {token: state.token}
+}
+
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ScreenHome)

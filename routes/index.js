@@ -7,6 +7,43 @@ var bcrypt = require('bcrypt');
 var userModel = require('../models/users')
 
 
+router.post('/add-wishlist', async function(req, res, next) {
+
+var token = req.body.token
+var searchUser = await userModel.findOne({token: token})
+if(searchUser){  
+    var article = {
+            title: req.body.title,
+            description: req.body.description,
+            content: req.body.content,
+            urlToImage: req.body.urlToImage,
+        }
+    searchUser.wishlist.push(article)
+    let saveUser = await searchUser.save()
+    res.send(saveUser)
+  }else{
+    res.send('error')
+  }
+}
+)
+
+router.delete('/delete-wishlist/:token/:title', async function(req, res, next) {
+
+
+  var searchUser = await userModel.updateOne({token: req.params.token},
+    
+    {$pull: {wishlist: {title: req.params.title}}},
+    {multi:true})
+
+    if (searchUser.mofifiedCount === 1) {
+      res.json('success')
+    } else {
+      res.json('error')
+    }
+  });
+
+
+
 router.post('/sign-up', async function(req,res,next){
 
   var error = []
@@ -88,6 +125,16 @@ router.post('/sign-in', async function(req,res,next){
   
 
   res.json({result, user, error, token})
+
+
+})
+
+router.post('/get-data', async function(req,res,next){
+
+  console.log(req.body.token)
+  var wishList = await userModel.findOne({token: req.body.token})
+
+  res.json(wishList.wishlist)
 
 
 })
